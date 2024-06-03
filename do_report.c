@@ -17,13 +17,27 @@ int main(int argc, char **argv) {
   struct timeval t;
   gettimeofday(&t, NULL);
   srand(t.tv_sec);
-  rep.x = atoi(argv[1]);
-  rep.y = atoi(argv[2]);
-  rep.z = atoi(argv[3]);
+  if (0) {
+    rep.x = atoi(argv[1]);
+    rep.y = atoi(argv[2]);
+    rep.z = atoi(argv[3]);
+  } else {
+    //rep.x = rand();
+    //rep.y = rand();
+    //rep.z = rand();
+  }
   for (int i=0; i<sizeof(rep.buttons); i++) {
-    rep.buttons[i] = rand();
+    //rep.buttons[i] = rand();
   }
   int fd = open("/dev/hidg0", O_RDWR);
-  write(fd, &rep, sizeof(rep));
+  for (int button = 0; button < 80; button++) {
+    int byte = button/8;
+    int bit = button % 8;
+    rep.buttons[byte] = 1<<bit;
+    write(fd, &rep, sizeof(rep));
+    rep.buttons[byte] = 0;
+    write(fd, &rep, sizeof(rep));
+    sleep(1);
+  }
   close(fd);
 }

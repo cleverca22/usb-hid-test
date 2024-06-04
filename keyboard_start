@@ -20,7 +20,7 @@ cd functions/hid.foo
 
   echo 1 > protocol
   echo 1 > subclass
-  echo 13 > report_length
+  echo 4 > report_length
   cat "$path" > report_desc
 cd ../..
 

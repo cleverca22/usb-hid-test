@@ -7,8 +7,9 @@
 #include <sys/time.h>
 
 typedef struct {
+//  uint8_t report_id;
   uint8_t x, y, z;
-  uint8_t buttons[10];
+  uint8_t buttons[1];
 } report;
 
 report rep;
@@ -17,6 +18,7 @@ int main(int argc, char **argv) {
   struct timeval t;
   gettimeofday(&t, NULL);
   srand(t.tv_sec);
+//  rep.report_id = 2;
   if (0) {
     rep.x = atoi(argv[1]);
     rep.y = atoi(argv[2]);

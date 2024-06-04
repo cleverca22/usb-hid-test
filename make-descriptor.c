@@ -6,48 +6,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
-enum {
-  HID_USAGE_PAGE_DESKTOP = 0x1,
-  HID_USAGE_PAGE_BUTTON  = 0x9,
-};
-
-enum {
-  HID_COLLECTION_PHYSICAL = 0,
-  HID_COLLECTION_APPLICATION,
-  HID_COLLECTION_LOGICAL,
-};
-
-enum {
-  HID_USAGE_DESKTOP_X = 0x30,
-  HID_USAGE_DESKTOP_Y = 0x31,
-  HID_USAGE_DESKTOP_Z = 0x32,
-};
-
-enum {
-  HID_USAGE_DESKTOP_JOYSTICK = 4,
-  HID_USAGE_DESKTOP_GAMEPAD = 5,
-};
-
-#define HID_USAGE_PAGE(x) 0x5, x
-#define HID_USAGE(x) 0x9, x
-#define HID_COLLECTION(x) 0xa1, x
-#define HID_COLLECTION_END 0xc0
-#define HID_REPORT_COUNT(x) 0x95, x
-#define HID_REPORT_SIZE(x) 0x75, x
-#define HID_LOGICAL_MIN(x) 0x15, x
-#define HID_LOGICAL_MAX(x) 0x26, (x & 0xff), (x >> 8)
-#define HID_PHYSICAL_MIN(x) 0x35, x
-#define HID_PHYSICAL_MAX(x) 0x46, (x & 0xff), (x >> 8)
-#define HID_INPUT(x) 0x81, x
-#define HID_PUSH 0xa4
-#define HID_POP 0xb4
-#define HID_USAGE_MIN(x) 0x19, x
-#define HID_USAGE_MAX(x) 0x29, x
-#define HID_REPORT_ID(x) 0x85, x
-
-#define HID_VARIABLE (1<<1)
-
+#include "hid.h"
 
 uint8_t *make_descriptor(int bits_per_axis, int button_max, int *size) {
   uint8_t hid_descriptor[] = {
@@ -94,7 +55,8 @@ int main(int argc, char **argv) {
   uint8_t *buffer = make_descriptor(8, 1, &size);
   printf("%d\n", size);
   int fd = open("out.bin", O_RDWR | O_CREAT | O_TRUNC, 0666);
-  write(fd, buffer, size);
+  int ret = write(fd, buffer, size);
+  assert(ret == size);
   close(fd);
   for (int i=0; i<size; i++) {
     printf("0x%x,", buffer[i]);

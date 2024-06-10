@@ -144,3 +144,8 @@ enum {
 #define HID_USAGE_MAX(x)    0x29, x
 #define HID_REPORT_ID(x)    0x85, x
 #define HID_VARIABLE        (1<<1)
+
+#define ENCODE_1(x)         x
+#define ENCODE_2(x)        (x & 0xff), (x >> 8)
+
+#define HID_REPORT_ITEM(data, tag, type, size) (((tag) << 4) | ((type) << 2) | (size)), ENCODE_##size(data)

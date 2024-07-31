@@ -1,31 +1,31 @@
 #!/bin/bash
 
-path=$(realpath $1)
 
 echo > /sys/kernel/config/usb_gadget/g1/UDC
 rm /sys/kernel/config/usb_gadget/g1/configs/c.1/hid.foo
+rm /sys/kernel/config/usb_gadget/g1/configs/c.1/mass_storage.foo
+rmdir /sys/kernel/config/usb_gadget/g1/functions/mass_storage.foo
 rmdir /sys/kernel/config/usb_gadget/g1/functions/hid.foo
 rmdir /sys/kernel/config/usb_gadget/g1/configs/c.1/strings/0x409
 rmdir /sys/kernel/config/usb_gadget/g1/configs/c.1
 rmdir /sys/kernel/config/usb_gadget/g1/strings/0x409
+rmdir /sys/kernel/config/usb_gadget/g1/strings/0x411
 rmdir /sys/kernel/config/usb_gadget/g1
 
 modprobe usb_f_hid
 
+set -e
+
 cd /sys/kernel/config/usb_gadget
 mkdir g1
 cd g1
-mkdir functions/hid.foo
-cd functions/hid.foo
-
-  echo 1 > protocol
-  echo 1 > subclass
-  echo 4 > report_length
-  cat "$path" > report_desc
+mkdir functions/mass_storage.foo
+cd functions/mass_storage.foo
+  echo '/nas/downloads/SnowLeopardInstall/snow leopard install.iso' > lun.0/file
 cd ../..
 
 mkdir -pv configs/c.1/strings/0x409
-echo "keyboard mode" > configs/c.1/strings/0x409/configuration
+echo "msd mode" > configs/c.1/strings/0x409/configuration
 
 mkdir strings/0x409
 mkdir strings/0x411
@@ -34,6 +34,6 @@ echo "rpi-tools pi400 keyboard" > strings/0x409/product
 echo "テスト" > strings/0x411/product
 grep Serial /proc/cpuinfo  | cut -c19-26 > strings/0x409/serialnumber
 
-ln -sv functions/hid.foo configs/c.1
+ln -sv functions/mass_storage.foo configs/c.1
 
 ls /sys/class/udc/ > UDC
